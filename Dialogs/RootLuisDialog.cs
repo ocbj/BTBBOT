@@ -12,11 +12,13 @@
     using Microsoft.Bot.Connector;
     using Model;
 
-    [LuisModel("53195ef8-123e-4b33-a3d6-66119b3b1bd1", "422352fa67fb4808a8f1e0aa6563998e")]
+    [LuisModel("34a2c531-aba6-433a-841d-14ebf95eb628", "239ef3be43ec41c7b8a750cc73fbc542")]
     [Serializable]
     public class RootLuisDialog : LuisDialog<object>
     {
         private const string EntityGeographyCity = "builtin.geography.city";
+        private const string EntityUserFirstName = "user::firstName";
+
 
         private const string EntityHotelName = "Hotel";
 
@@ -31,6 +33,37 @@
             string message = $"Sorry, I did not understand '{result.Query}'. Type 'help' if you need assistance.";
 
             await context.PostAsync(message);
+
+            context.Wait(this.MessageReceived);
+        }
+
+        [LuisIntent("OffendBot")]
+        public async Task OffendBot(IDialogContext context, LuisResult result)
+        {
+            string message = $"Do you talk to your mom like that? >_<";
+
+            await context.PostAsync(message);
+
+            context.Wait(this.MessageReceived);
+        }
+
+        [LuisIntent("BlameSomeone")]
+        public async Task BlameSomeone(IDialogContext context, LuisResult result)
+        {
+            EntityRecommendation userFirstNameRecommendation;
+
+            if (result.TryFindEntity(EntityUserFirstName, out userFirstNameRecommendation))
+            {
+                string message = $"So you believe it was " + userFirstNameRecommendation.Entity + "? I'll go interrogate him/her!";
+
+                await context.PostAsync(message);
+            } else
+            {
+                string message = $"It sounds like you were trying to blame someone, but failed miserably LOL!";
+
+                await context.PostAsync(message);
+            }
+
 
             context.Wait(this.MessageReceived);
         }
