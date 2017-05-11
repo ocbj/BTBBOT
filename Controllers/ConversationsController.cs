@@ -14,9 +14,11 @@ namespace LuisBot.Controllers
     /// </summary>
     public class ConversationsController : ApiController
     {
-        const string url = "http://localhost:54424";
-        const string svcUrl = "https://btbbot.azurewebsites.net/api/messages";
-        const string botId = "btbbot";
+        const string connectorUrl = "http://btbbot.azurewebsites.net:54424";
+        const string id = "ac99631b-69e2-4619-b585-c12a813a7b16";
+        const string pass = "53y7pDmxpmPTGipgGjJOgE2";
+        const string svcUrl = "http://btbbot.azurewebsites.net/api/messages";
+        const string botId = "l7i8emhc2i987i0gl";
 
         /// <summary>
         /// First message that gets sent, with appropriate links and shit
@@ -84,7 +86,7 @@ namespace LuisBot.Controllers
                 var recipient = new ChannelAccount("default-user", "default-user");
 
                 // df
-                var connector = new ConnectorClient(new Uri("http://localhost:54424"), "fd2ddaea-568b-4850-8fcc-06a3d2a15cb9", "jjfcyjVSLjgcsWQh02jGc8i");
+                var connector = new ConnectorClient(new Uri(connectorUrl), id, pass);
 
                 // Add convo
                 var conversations = connector.Conversations;
