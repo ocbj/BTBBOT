@@ -83,7 +83,7 @@ namespace LuisBot.Controllers
             try
             {
                 var from = new ChannelAccount(botId, "Bot");
-                var recipient = new ChannelAccount("default-user", "default-user");
+                var recipient = new ChannelAccount(username, username);
 
                 // df
                 var connector = new ConnectorClient(new Uri(connectorUrl), id, pass);
