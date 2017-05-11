@@ -137,6 +137,8 @@
   <ItemGroup>
     <Content Include="packages.config" />
     <Content Include="LuisBot.json" />
+    <None Include="Properties\PublishProfiles\BTBBOT - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\BTBBOT - Web Deploy.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

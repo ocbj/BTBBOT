@@ -14,6 +14,10 @@ namespace LuisBot.Controllers
     /// </summary>
     public class ConversationsController : ApiController
     {
+        const string url = "http://localhost:54424";
+        const string svcUrl = "https://btbbot.azurewebsites.net/api/messages";
+        const string botId = "btbbot";
+
         /// <summary>
         /// First message that gets sent, with appropriate links and shit
         /// </summary>
@@ -22,10 +26,10 @@ namespace LuisBot.Controllers
         public IMessageActivity WelcomeMessage(ConversationAccount conversation, string username)
         {
             var msg = Activity.CreateMessageActivity();
-            msg.From = new ChannelAccount("177b2eem05dc4542ac", "Bot");
+            msg.From = new ChannelAccount(botId, "BTBBot");
             msg.Recipient = new ChannelAccount("default-user", "default-user");
             msg.Conversation = conversation;
-            msg.ServiceUrl = "http://localhost:3979/api/messages";
+            msg.ServiceUrl = svcUrl;
 
             HeroCard heroCard = new HeroCard()
             {
@@ -57,10 +61,10 @@ namespace LuisBot.Controllers
         public IMessageActivity CreateMessage(ConversationAccount conversation, string text)
         {
             var msg = Activity.CreateMessageActivity();
-            msg.From = new ChannelAccount("177b2eem05dc4542ac", "Bot");
+            msg.From = new ChannelAccount(botId, "Bot");
             msg.Recipient = new ChannelAccount("default-user", "default-user");
             msg.Conversation = conversation;
-            msg.ServiceUrl = "http://localhost:3979/api/messages";
+            msg.ServiceUrl = svcUrl;
             msg.Text = text;
 
             return msg;
@@ -76,11 +80,11 @@ namespace LuisBot.Controllers
         {
             try
             {
-                var from = new ChannelAccount("177b2eem05dc4542ac", "Bot");
+                var from = new ChannelAccount(botId, "Bot");
                 var recipient = new ChannelAccount("default-user", "default-user");
 
-                // 
-                var connector = new ConnectorClient(new Uri("http://localhost:54424"), "", "");
+                // df
+                var connector = new ConnectorClient(new Uri("http://localhost:54424"), "fd2ddaea-568b-4850-8fcc-06a3d2a15cb9", "jjfcyjVSLjgcsWQh02jGc8i");
 
                 // Add convo
                 var conversations = connector.Conversations;
