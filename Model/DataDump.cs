@@ -19,6 +19,8 @@ namespace LuisBot.Model
             };
         }
 
+        
+
         public static List<BrokenBuild> BrokenBuilds
         {
             get;
