@@ -76,19 +76,15 @@ namespace LuisBot.Controllers
 
 
 
-        public async Task<HttpResponseMessage> Post([FromBody]string data)
+        public async Task<HttpResponseMessage> Post([FromBody]BrokeBuildJson data)
         {
-
-            data = data.Replace("${ SCM_CHANGELOG }", "");
-            var d = JsonConvert.DeserializeObject<BrokeBuildJson>(data);
-
             try
             {
                 BrokenBuild build = new BrokenBuild();
                 build.Offenders = new List<Model.Offender>();
-                build.Job = d.jobName;
-                build.Build = d.buildNumber;
-                foreach (var change in d?.changelog?.GroupBy(x => x.author))
+                build.Job = data.jobName;
+                build.Build = data.buildNumber;
+                foreach (var change in data?.changelog?.GroupBy(x => x.author))
                 {
                     var fullUser = DataDump.Users.Where(u => u.BuildName == change.Key).FirstOrDefault();
 
@@ -135,7 +131,7 @@ namespace LuisBot.Controllers
                 msg.Conversation = new ConversationAccount(id: "8:" + conversation.Id);
                 msg.ServiceUrl = svcUrl;
 
-                var changeLog = d?.changelog?.OrderByDescending(x => x.date).Select(x => new CardAction()
+                var changeLog = data?.changelog?.OrderByDescending(x => x.date).Select(x => new CardAction()
                 {
                     Title = $"Revision {x.revision}",
                     Type = ActionTypes.OpenUrl,
@@ -144,8 +140,8 @@ namespace LuisBot.Controllers
 
                 HeroCard heroCard = new HeroCard()
                 {
-                    Title = $"Someone broke build #{d.buildNumber}.",
-                    Subtitle = $"{d.jobName}?",
+                    Title = $"Someone broke build #{data.buildNumber}.",
+                    Subtitle = $"{data.jobName}?",
                     Images = new List<CardImage>() { new CardImage() { Url = "http://btbbot.azurewebsites.net/wow.jpg" } },
                     Buttons = changeLog?.ToList()
                 };
