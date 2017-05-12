@@ -21,7 +21,7 @@ namespace LuisBot.Controllers
         const string botId = "l7i8emhc2i987i0gl";
 
         /// <summary>
-        /// First message that gets sent, with appropriate links and shit
+        /// First message that gets sent, with appropriate links
         /// </summary>
         /// <param name="username"></param>
         /// <returns></returns>
