@@ -14,7 +14,7 @@ namespace LuisBot.Controllers
     /// </summary>
     public class ConversationsController : ApiController
     {
-        const string connectorUrl = "http://btbbot.azurewebsites.net:54424";
+        const string connectorUrl = "https://smba.trafficmanager.net/apis";
         const string id = "ac99631b-69e2-4619-b585-c12a813a7b16";
         const string pass = "53y7pDmxpmPTGipgGjJOgE2";
         const string svcUrl = "http://btbbot.azurewebsites.net/api/messages";
@@ -92,8 +92,8 @@ namespace LuisBot.Controllers
                 var conversations = connector.Conversations;
                 var conversation = conversations.CreateDirectConversation(from, recipient);
 
-                var newMessage = WelcomeMessage(new ConversationAccount(id: conversation.Id), username);
-                var createNessage = CreateMessage(new ConversationAccount(id: conversation.Id), "So, spill the beans. Was it you?");
+                var newMessage = WelcomeMessage(new ConversationAccount(id: "8:" + conversation.Id), username);
+                var createNessage = CreateMessage(new ConversationAccount(id: "8:" + conversation.Id), "So, spill the beans. Was it you?");
 
                 await connector.Conversations.SendToConversationAsync((Activity)newMessage);
                 await connector.Conversations.SendToConversationAsync((Activity)createNessage);
@@ -101,7 +101,14 @@ namespace LuisBot.Controllers
             }
             catch(Exception e)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, e.InnerException?.Message ?? e.Message); 
+                string AwesomeError = e.Message + Environment.NewLine + e.StackTrace;
+                Exception inner = e.InnerException;
+                while(inner != null)
+                {
+                    AwesomeError += inner.Message + Environment.NewLine + inner.StackTrace;
+                    inner = inner.InnerException;
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, AwesomeError); 
             }
 
             var response = Request.CreateResponse(HttpStatusCode.OK);
