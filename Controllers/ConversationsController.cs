@@ -94,7 +94,7 @@ namespace LuisBot.Controllers
 
                 var newMessage = WelcomeMessage(new ConversationAccount(id: "8:" + conversation.Id), username);
                 var createNessage = CreateMessage(new ConversationAccount(id: "8:" + conversation.Id), "So, spill the beans. Was it you?");
-
+            
                 await connector.Conversations.SendToConversationAsync((Activity)newMessage);
                 await connector.Conversations.SendToConversationAsync((Activity)createNessage);
 

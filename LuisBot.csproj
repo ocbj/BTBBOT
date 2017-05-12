@@ -123,12 +123,16 @@
     <Compile Include="Controllers\JenkinsController.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="Dialogs\RootLuisDialog.cs" />
+    <Compile Include="Dialogs\Utils.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Model\BrokenBuild.cs" />
+    <Compile Include="Model\DataDump.cs" />
     <Compile Include="Model\BrokeBuildJson.cs" />
     <Compile Include="Model\Hotel.cs" />
     <Compile Include="DontKnowQuery.cs" />
+    <Compile Include="Model\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\BingSpellCheckError.cs" />
     <Compile Include="Services\BingSpellCheckFlaggedToken.cs" />
