@@ -47,30 +47,17 @@
         [LuisIntent("None")]
         public async Task None(IDialogContext context, LuisResult result)
         {
+            await context.PostAsync($"What does {result.Query} mean?");
 
-            var IDontKnow = new FormDialog<DontKnowQuery>(new DontKnowQuery(), this.BuildDontKnowForm, FormOptions.PromptInStart, result.Entities);
-
-            context.Call(IDontKnow, this.ResumeAfterBuildDontKnowFormDialog);
-            context.Wait(this.MessageReceived);
-        }
-
-        private async Task ResumeAfterBuildDontKnowFormDialog(IDialogContext context, IAwaitable<DontKnowQuery> result)
-        {
-            context.Done<object>(null);
-        }
-
-        private IForm<DontKnowQuery> BuildDontKnowForm()
-        {
-            OnCompletionAsyncDelegate<DontKnowQuery> processHotelsSearch = async (context, state) =>
+            ResumeAfter<object> processDontKnow = async (c, s) =>
             {
+                await s;
                 var message = "I don't think I needed to know that";
-                await context.PostAsync(message);
+                await c.PostAsync(message);
+                c.Wait(this.MessageReceived);
             };
 
-            return new FormBuilder<DontKnowQuery>()
-                .Field(nameof(DontKnowQuery.Meaning), (state) => string.IsNullOrEmpty(state.Meaning))
-                .OnCompletion(processHotelsSearch)
-                .Build();
+            context.Wait(processDontKnow);
         }
 
         [LuisIntent("OffendBot")]

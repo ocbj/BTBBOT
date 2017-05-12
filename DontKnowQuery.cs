@@ -6,8 +6,7 @@
     [Serializable]
     public class DontKnowQuery
     {
-        [Prompt("What does {&} mean?")]
-        [Optional]
+        [Prompt("What does that mean?")]
         public string Meaning { get; set; }
     }
 }
