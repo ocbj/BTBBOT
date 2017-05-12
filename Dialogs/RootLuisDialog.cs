@@ -191,12 +191,18 @@
         public async Task GetAssociatedJIRAS(IDialogContext context, LuisResult result)
         {
             CheckMe(context);
-            var user = DataDump.BrokenBuilds.Last().Offenders.Where(u => u.FirstName == context.UserData.GetValue<User>("me").FirstName).FirstOrDefault();
-            if (user == null)
-                await context.PostAsync("You don't have a JIRA");
+            if (DataDump.BrokenBuilds.Any())
+            {
+                var user = DataDump.BrokenBuilds.Last().Offenders.Where(u => u.FirstName == context.UserData.GetValue<User>("me").FirstName).FirstOrDefault();
+                if (user == null)
+                    await context.PostAsync("You don't have a JIRA");
+                else
+                    await context.PostAsync("This should be the users JIRA list");
+            }
             else
-                await context.PostAsync("Ok");
-
+            {
+                await context.PostAsync("There are no builds");
+            }
             context.Wait(this.MessageReceived);
         }
 
@@ -204,20 +210,27 @@
         public async Task GetOtherOffenders(IDialogContext context, LuisResult result)
         {
             CheckMe(context);
-            var users = DataDump.BrokenBuilds.Last().Offenders.Where(u => u.FirstName != context.UserData.GetValue<User>("me").FirstName);
-            if (users.Count() > 1)
+            if (DataDump.BrokenBuilds.Any())
             {
-                await context.PostAsync(string.Join(",", users.Skip(1).Select(u => u.FirstName) + "and" + users.First().FirstName));
-            }
-            else if (users.Count() == 1)
-            {
-                await context.PostAsync(users.First().FirstName);
+                var users = DataDump.BrokenBuilds.Last().Offenders.Where(u => u.FirstName != context.UserData.GetValue<User>("me").FirstName);
+                if (users.Count() > 1)
+                {
+                    await context.PostAsync(string.Join(",", users.Skip(1).Select(u => u.FirstName) + "and" + users.First().FirstName));
+                }
+                else if (users.Count() == 1)
+                {
+                    await context.PostAsync(users.First().FirstName);
+                }
+                else
+                {
+                    await context.PostAsync("There's no one else, admit it. It was you");
+                }
             }
             else
             {
-                await context.PostAsync("There's no one else, admit it. It was you");
+                await context.PostAsync("I find it offensive that you think there's someone to blame for this");
             }
-        
+
             context.Wait(this.MessageReceived);
         }
 
