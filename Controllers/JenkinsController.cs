@@ -63,8 +63,17 @@ namespace LuisBot.Controllers
         Random r = new Random();
 
 
+        public IMessageActivity CreateMessage(ConversationAccount conversation, string text)
+        {
+            var msg = Activity.CreateMessageActivity();
+            msg.From = new ChannelAccount(botId, "Bot");
+            msg.Recipient = new ChannelAccount("default-user", "default-user");
+            msg.Conversation = conversation;
+            msg.ServiceUrl = svcUrl;
+            msg.Text = text;
 
-
+            return msg;
+        }
 
         public async Task<HttpResponseMessage> Post([FromBody]BrokeBuildJson data)
         {
@@ -101,30 +110,33 @@ namespace LuisBot.Controllers
 
                 // create msg
                 var msg = Activity.CreateMessageActivity();
-                msg.From = new ChannelAccount(botId, "BTBBot");
+                msg.From = new ChannelAccount(botId, "Jerry");
                 msg.Recipient = new ChannelAccount(user.SkypeName, user.FirstName);
                 msg.Conversation = new ConversationAccount(id: "8:" + conversation.Id);
                 msg.ServiceUrl = svcUrl;
 
-                var changeLog = data.changelog.OrderByDescending(x => x.date)
-                    .Select(x => new CardAction()
-                    {
-                        Title = $"{x.author} revision {x.revision}",
-                        Type = ActionTypes.OpenUrl,
-                        Value = $"https://jira.vermilionreporting.com/browse/" + HttpUtility.UrlEncode("VP-319")
-                    });
+                var changeLog = data.changelog.OrderByDescending(x => x.date).Select(x => new CardAction()
+                {
+                    Title = $"{x.author} revision {x.revision}",
+                    Type = ActionTypes.OpenUrl,
+                    Value = $"http://btbbot.azurewebsites.net/wow.jpg"
+                });
 
                 HeroCard heroCard = new HeroCard()
                 {
                     Title = $"Someone broke build #{data.buildNumber}.",
-                    Subtitle = $"Was it you {user.FirstName}?",
+                    Subtitle = $"{data.jobName}?",
                     Images = new List<CardImage>() { new CardImage() { Url = "http://btbbot.azurewebsites.net/wow.jpg" } },
                     Buttons = changeLog.ToList()
                 };
 
                 msg.Attachments.Add(heroCard.ToAttachment());
 
+                var createNessage = CreateMessage(new ConversationAccount(id: "8:" + conversation.Id), $"Was it you {user.FirstName}?");
+
+
                 await connector.Conversations.SendToConversationAsync((Activity)msg);
+                await connector.Conversations.SendToConversationAsync((Activity)createNessage);
 
             }
             catch (Exception e)
