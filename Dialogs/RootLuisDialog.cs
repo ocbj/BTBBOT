@@ -11,6 +11,7 @@
     using Microsoft.Bot.Builder.Luis.Models;
     using Microsoft.Bot.Connector;
     using Model;
+    using System.Text.RegularExpressions;
 
     [LuisModel("34a2c531-aba6-433a-841d-14ebf95eb628", "239ef3be43ec41c7b8a750cc73fbc542")]
     [Serializable]
@@ -242,6 +243,16 @@
             await context.PostAsync(message);
 
             context.Wait(this.MessageReceived);
+        }
+
+        private IEnumerable<string> getJIRANumbers(Changelog changelog)
+        {
+            if (changelog != null)
+            {
+                string pattern = @"V[RP](SGUI)?-[\d]+";
+                return Regex.Matches(changelog.message, pattern, RegexOptions.IgnoreCase).Cast<Match>().Select(m => m.Value);
+            }
+            return null;
         }
     }
 }
