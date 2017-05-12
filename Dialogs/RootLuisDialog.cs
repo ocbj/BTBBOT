@@ -77,7 +77,7 @@
 
             if (result.TryFindEntity(EntityUserFirstName, out userFirstNameRecommendation))
             {
-                string message = $"So you believe it was " + userFirstNameRecommendation.Entity + "? I'll go interrogate them";
+                string message = $"So you believe it was {userFirstNameRecommendation.Entity}? I'll go interrogate them";
 
                 await context.PostAsync(message);
             } else

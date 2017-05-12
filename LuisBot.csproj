@@ -120,11 +120,13 @@
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ConversationsController.cs" />
+    <Compile Include="Controllers\JenkinsController.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="Dialogs\RootLuisDialog.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Model\BrokeBuildJson.cs" />
     <Compile Include="Model\Hotel.cs" />
     <Compile Include="DontKnowQuery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
