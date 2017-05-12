@@ -120,6 +120,7 @@
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ConversationsController.cs" />
+    <Compile Include="Controllers\JenkinsController.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="Dialogs\RootLuisDialog.cs" />
     <Compile Include="Dialogs\Utils.cs" />
@@ -128,6 +129,7 @@
     </Compile>
     <Compile Include="Model\BrokenBuild.cs" />
     <Compile Include="Model\DataDump.cs" />
+    <Compile Include="Model\BrokeBuildJson.cs" />
     <Compile Include="Model\Hotel.cs" />
     <Compile Include="DontKnowQuery.cs" />
     <Compile Include="Model\User.cs" />
