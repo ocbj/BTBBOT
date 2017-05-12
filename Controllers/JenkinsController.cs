@@ -62,13 +62,6 @@ namespace LuisBot.Controllers
 
         Random r = new Random();
 
-        readonly Dictionary<string, string> users = new Dictionary<string, string>()
-        {
-            {"ucariouk","Billy O'Connor" },
-            {"spuds","J" },
-            {"sally","JJ" },
-            {"jenny","JJ" },
-        };
 
         /// <summary>
         /// First message that gets sent, with appropriate links
@@ -128,7 +121,7 @@ namespace LuisBot.Controllers
         {
             try
             {
-                var user = r.Next(0, 3);
+                var user = DataDump.Users[r.Next(DataDump.Users.Count())];
 
                 var changeLog = data.changelog
                     .Select(x => new CardAction(type: ActionTypes.OpenUrl, title: $"author {x.author} revision {x.revision}", value: ""));
@@ -136,11 +129,21 @@ namespace LuisBot.Controllers
                 HeroCard heroCard = new HeroCard()
                 {
                     Title = $"Someone broke the build #{data.buildNumber}.",
-                    Subtitle = $"Was it you {user}?",
+                    Subtitle = $"Was it you {user.FirstName}?",
                     Images = new List<CardImage>() { new CardImage() { Url = "https://uploads.toptal.io/blog/image/92347/toptal-blog-image-1460406405672-52ec53e6624f51828dab1aee43efe75a.jpg" } },
                     Buttons = changeLog.ToList()
                 };
 
+
+                var from = new ChannelAccount(botId, "Bot");
+                var recipient = new ChannelAccount(user.SkypeName, user.FirstName);
+                var connector = new ConnectorClient(new Uri(connectorUrl), id, pass);
+                var conversations = connector.Conversations;
+                var conversation = conversations.CreateDirectConversation(from, recipient);
+
+                var newMessage = WelcomeMessage(new ConversationAccount(id: "8:" + conversation.Id), user.SkypeName);
+
+                await connector.Conversations.SendToConversationAsync((Activity)newMessage);
             }
             catch (Exception e)
             {
