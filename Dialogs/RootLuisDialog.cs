@@ -155,7 +155,7 @@
         {
             if (DataDump.BrokenBuilds.Any())
             {
-                var me = DataDump.Users.Where(u => u.FirstName == context.Activity.From.Name).FirstOrDefault();
+                var me = DataDump.Users.Where(u => String.Compare(u.SkypeName,context.Activity.From.Name) == 0).FirstOrDefault();
                 if (me != null)
                 {
                     var user = DataDump.BrokenBuilds.Last().Offenders.Where(u => u.FirstName == me.FirstName).FirstOrDefault();
@@ -190,7 +190,7 @@
         {
             if (DataDump.BrokenBuilds.Any())
             {
-                var me = DataDump.Users.Where(u => u.FirstName == context.Activity.From.Name).FirstOrDefault();
+                var me = DataDump.Users.Where(u => String.Compare(u.SkypeName, context.Activity.From.Name) == 0).FirstOrDefault();
                 if (me != null)
                 {
                     var user = DataDump.BrokenBuilds.Last().Offenders.Where(u => u.FirstName == me.FirstName).FirstOrDefault();
@@ -218,7 +218,7 @@
         {
             if (DataDump.BrokenBuilds.Any())
             {
-                var me = DataDump.Users.Where(u => u.FirstName == context.Activity.From.Name).FirstOrDefault();
+                var me = DataDump.Users.Where(u => String.Compare(u.SkypeName, context.Activity.From.Name) == 0).FirstOrDefault();
                 if (me != null)
                 {
                     var users = DataDump.BrokenBuilds.Last().Offenders.Where(u => u.FirstName != me.FirstName);
