@@ -245,14 +245,6 @@
             context.Wait(this.MessageReceived);
         }
 
-        private IEnumerable<string> getJIRANumbers(Changelog changelog)
-        {
-            if (changelog != null)
-            {
-                string pattern = @"V[RP](SGUI)?-[\d]+";
-                return Regex.Matches(changelog.message, pattern, RegexOptions.IgnoreCase).Cast<Match>().Select(m => m.Value);
-            }
-            return null;
-        }
+
     }
 }

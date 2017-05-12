@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
@@ -63,6 +64,16 @@ namespace LuisBot.Controllers
         Random r = new Random();
 
 
+        private IEnumerable<string> getJIRANumbers(Changelog changelog)
+        {
+            if (changelog != null)
+            {
+                string pattern = @"V[RP](SGUI)?-[\d]+";
+                return Regex.Matches(changelog.message, pattern, RegexOptions.IgnoreCase).Cast<Match>().Select(m => m.Value);
+            }
+            return null;
+        }
+
 
 
         public async Task<HttpResponseMessage> Post([FromBody]BrokeBuildJson data)
@@ -73,22 +84,37 @@ namespace LuisBot.Controllers
                 build.Offenders = new List<Model.User>();
                 build.Job = data.jobName;
                 build.Build = data.buildNumber;
-                foreach(var change in data.changelog.GroupBy(x => x.author))
+                foreach (var change in data?.changelog?.GroupBy(x => x.author))
                 {
                     var fullUser = DataDump.Users.Where(u => u.BuildName == change.Key).FirstOrDefault();
+
+                    if (fullUser == null)
+                        continue;
+
                     var offender = new Model.Offender() { FirstName = fullUser.FirstName, SkypeName = fullUser.SkypeName, BuildName = fullUser.BuildName };
                     offender.JIRAs = new List<Model.JIRA>();
                     foreach (var jira in change)
                     {
                         var newJira = new JIRA()
                         {
-                            Message = jira.message
+                            Message = jira.message,
+                            Id = string.Join(",",getJIRANumbers(jira).ToList())
                         };
                         offender.JIRAs.Add(newJira);
                     }
                     build.Offenders.Add(offender);
                 }
                 DataDump.BrokenBuilds.Add(build);
+
+
+            }
+            catch (Exception e)
+            {
+                // swallow 
+            }
+
+            try
+            { 
 
                 var user = new User() { SkypeName = "ucariouk", FirstName =  "Bill" }; //  DataDump.Users[r.Next(DataDump.Users.Count())];
 
@@ -105,9 +131,9 @@ namespace LuisBot.Controllers
                 msg.Conversation = new ConversationAccount(id: "8:" + conversation.Id);
                 msg.ServiceUrl = svcUrl;
 
-                var changeLog = data.changelog.OrderByDescending(x => x.date).Select(x => new CardAction()
+                var changeLog = data?.changelog?.OrderByDescending(x => x.date).Select(x => new CardAction()
                 {
-                    Title = $"{x.author} revision {x.revision}",
+                    Title = $"Revision {x.revision}",
                     Type = ActionTypes.OpenUrl,
                     Value = $"https://jira.vermilionreporting.com/browse/" + HttpUtility.UrlEncode("VP-319")
                 });
@@ -117,7 +143,7 @@ namespace LuisBot.Controllers
                     Title = $"Someone broke build #{data.buildNumber}.",
                     Subtitle = $"{data.jobName}?",
                     Images = new List<CardImage>() { new CardImage() { Url = "http://btbbot.azurewebsites.net/wow.jpg" } },
-                    Buttons = changeLog.ToList()
+                    Buttons = changeLog?.ToList()
                 };
 
                 msg.Attachments.Add(heroCard.ToAttachment());
