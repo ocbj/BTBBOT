@@ -69,6 +69,27 @@ namespace LuisBot.Controllers
         {
             try
             {
+                BrokenBuild build = new BrokenBuild();
+                build.Offenders = new List<Model.User>();
+                build.Job = data.jobName;
+                build.Build = data.buildNumber;
+                foreach(var change in data.changelog.GroupBy(x => x.author))
+                {
+                    var fullUser = DataDump.Users.Where(u => u.BuildName == change.Key).FirstOrDefault();
+                    var offender = new Model.Offender() { FirstName = fullUser.FirstName, SkypeName = fullUser.SkypeName, BuildName = fullUser.BuildName };
+                    offender.JIRAs = new List<Model.JIRA>();
+                    foreach (var jira in change)
+                    {
+                        var newJira = new JIRA()
+                        {
+                            Message = jira.message
+                        };
+                        offender.JIRAs.Add(newJira);
+                    }
+                    build.Offenders.Add(offender);
+                }
+                DataDump.BrokenBuilds.Add(build);
+
                 var user = new User() { SkypeName = "ucariouk", FirstName =  "Bill" }; //  DataDump.Users[r.Next(DataDump.Users.Count())];
 
                 var from = new ChannelAccount(botId, "Bot");
