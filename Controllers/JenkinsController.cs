@@ -84,28 +84,33 @@ namespace LuisBot.Controllers
                 build.Offenders = new List<Model.Offender>();
                 build.Job = data.jobName;
                 build.Build = data.buildNumber;
-                foreach (var change in data?.changelog?.GroupBy(x => x.author))
+                if (data != null)
                 {
-                    var fullUser = DataDump.Users.Where(u => u.BuildName == change.Key).FirstOrDefault();
-
-                    if (fullUser == null)
-                        continue;
-
-                    var offender = new Model.Offender() { FirstName = fullUser.FirstName, SkypeName = fullUser.SkypeName, BuildName = fullUser.BuildName };
-                    offender.JIRAs = new List<Model.JIRA>();
-                    foreach (var jira in change)
+                    if (data.changelog != null)
                     {
-                        var newJira = new JIRA()
+                        foreach (var change in data.changelog.GroupBy(x => x.author))
                         {
-                            Message = jira.message,
-                            Id = string.Join(",",getJIRANumbers(jira).ToList())
-                        };
-                        offender.JIRAs.Add(newJira);
-                    }
-                    build.Offenders.Add(offender);
-                }
-                DataDump.BrokenBuilds.Add(build);
+                            var fullUser = DataDump.Users.Where(u => u.BuildName == change.Key).FirstOrDefault();
 
+                            if (fullUser == null)
+                                continue;
+
+                            var offender = new Model.Offender() { FirstName = fullUser.FirstName, SkypeName = fullUser.SkypeName, BuildName = fullUser.BuildName };
+                            offender.JIRAs = new List<Model.JIRA>();
+                            foreach (var jira in change)
+                            {
+                                var newJira = new JIRA()
+                                {
+                                    Message = jira.message,
+                                    Id = string.Join(",", getJIRANumbers(jira).ToList())
+                                };
+                                offender.JIRAs.Add(newJira);
+                            }
+                            build.Offenders.Add(offender);
+                        }
+                        DataDump.BrokenBuilds.Add(build);
+                    }
+                }
 
             }
             catch (Exception e)
@@ -130,20 +135,25 @@ namespace LuisBot.Controllers
                 msg.Recipient = recipient;
                 msg.Conversation = new ConversationAccount(id: "8:" + conversation.Id);
                 msg.ServiceUrl = svcUrl;
-
-                var changeLog = data?.changelog?.OrderByDescending(x => x.date).Select(x => new CardAction()
+                var changeLog = new List<CardAction>();
+                if (data != null)
                 {
-                    Title = $"Revision {x.revision}",
-                    Type = ActionTypes.OpenUrl,
-                    Value = $"https://jira.vermilionreporting.com/browse/" + HttpUtility.UrlEncode("VP-319")
-                });
-
+                    if (data.changelog != null)
+                    {
+                        changeLog = data.changelog.OrderByDescending(x => x.date).Select(x => new CardAction()
+                        {
+                            Title = $"Revision {x.revision}",
+                            Type = ActionTypes.OpenUrl,
+                            Value = $"https://jira.vermilionreporting.com/browse/" + HttpUtility.UrlEncode("VP-319")
+                        }).ToList();
+                    }
+                }
                 HeroCard heroCard = new HeroCard()
                 {
                     Title = $"Someone broke build #{data.buildNumber}.",
                     Subtitle = $"{data.jobName}?",
                     Images = new List<CardImage>() { new CardImage() { Url = "http://btbbot.azurewebsites.net/wow.jpg" } },
-                    Buttons = changeLog?.ToList()
+                    Buttons = changeLog.ToList()
                 };
 
                 msg.Attachments.Add(heroCard.ToAttachment());

@@ -5,5 +5,6 @@
         public string FirstName { get; internal set; }
         public string SkypeName { get; internal set; }
         public string BuildName { get; internal set; }
+        public string SkypeNiceName { get; internal set; }
     }
 }

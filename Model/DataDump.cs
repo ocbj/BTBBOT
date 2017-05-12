@@ -12,10 +12,10 @@ namespace LuisBot.Model
             BrokenBuilds = new List<BrokenBuild>();
             Users = new List<User>()
             {
-                new User() {FirstName = "James", SkypeName = "bubs75", BuildName = "james.barrass" },
-                new User() {FirstName = "Billy", SkypeName = "ucariouk", BuildName = "billy.oconnor" },
-                new User() {FirstName = "Dmitri", SkypeName = "ahumellihuk", BuildName = "dmitri.samoilov" },
-                new User() {FirstName = "Dan", SkypeName = "forbesdaniel", BuildName = "daniel.forbes" }
+                new User() {FirstName = "James", SkypeName = "bubs75", SkypeNiceName = "bubs75", BuildName = "james.barrass" },
+                new User() {FirstName = "Billy", SkypeName = "ucariouk",  SkypeNiceName = "Billy O'Connor", BuildName = "billy.oconnor" },
+                new User() {FirstName = "Dmitri", SkypeName = "ahumellihuk", SkypeNiceName = "Dmitri", BuildName = "dmitri.samoilov" },
+                new User() {FirstName = "Dan", SkypeName = "forbesdaniel", SkypeNiceName = "Dan", BuildName = "daniel.forbes" }
             };
         }
 
