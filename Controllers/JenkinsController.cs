@@ -81,7 +81,7 @@ namespace LuisBot.Controllers
             try
             {
                 BrokenBuild build = new BrokenBuild();
-                build.Offenders = new List<Model.User>();
+                build.Offenders = new List<Model.Offender>();
                 build.Job = data.jobName;
                 build.Build = data.buildNumber;
                 foreach (var change in data?.changelog?.GroupBy(x => x.author))

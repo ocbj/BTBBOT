@@ -22,16 +22,6 @@
         private const string EntityGeographyCity = "builtin.geography.city";
         private const string EntityUserFirstName = "user::firstName";
 
-        private void CheckMe(IDialogContext context)
-        {
-            if (!context.UserData.ContainsKey("me"))
-            {
-                var myName = context.Activity.From.Name;
-                var user = DataDump.Users.Where(u => u.FirstName == myName).FirstOrDefault();
-                context.UserData.SetValue("me", user);
-            }
-        }
-
         /*
          * 
          *
@@ -163,14 +153,21 @@
         [LuisIntent("DenyResponsibility")]
         public async Task DenyResponsibility(IDialogContext context, LuisResult result)
         {
-            CheckMe(context);
             if (DataDump.BrokenBuilds.Any())
             {
-                var user = DataDump.BrokenBuilds.Last().Offenders.Where(u => u.FirstName == context.UserData.GetValue<User>("me").FirstName).FirstOrDefault();
-                if (user == null)
-                    await context.PostAsync("I know");
+                var me = DataDump.Users.Where(u => u.FirstName == context.Activity.From.Name).FirstOrDefault();
+                if (me != null)
+                {
+                    var user = DataDump.BrokenBuilds.Last().Offenders.Where(u => u.FirstName == me.FirstName).FirstOrDefault();
+                    if (user == null)
+                        await context.PostAsync("I know");
+                    else
+                        await context.PostAsync("Ok");
+                }
                 else
-                    await context.PostAsync("Ok");
+                {
+                    await context.PostAsync("Who are you?");
+                }
             }
             else
             {
@@ -191,14 +188,23 @@
         [LuisIntent("GetAssociatedJIRA")]
         public async Task GetAssociatedJIRAS(IDialogContext context, LuisResult result)
         {
-            CheckMe(context);
             if (DataDump.BrokenBuilds.Any())
             {
-                var user = DataDump.BrokenBuilds.Last().Offenders.Where(u => u.FirstName == context.UserData.GetValue<User>("me").FirstName).FirstOrDefault();
-                if (user == null)
-                    await context.PostAsync("You don't have a JIRA");
+                var me = DataDump.Users.Where(u => u.FirstName == context.Activity.From.Name).FirstOrDefault();
+                if (me != null)
+                {
+                    var user = DataDump.BrokenBuilds.Last().Offenders.Where(u => u.FirstName == me.FirstName).FirstOrDefault();
+                    if (user == null)
+                        await context.PostAsync("You don't have a JIRA");
+                    else
+                    {
+                        await context.PostAsync(string.Join(",", user.JIRAs.Select(x => x.Id)));
+                    }
+                }
                 else
-                    await context.PostAsync("This should be the users JIRA list");
+                {
+                    await context.PostAsync("I don't know who you are");
+                }
             }
             else
             {
@@ -210,21 +216,28 @@
         [LuisIntent("GetOtherOffenders")]
         public async Task GetOtherOffenders(IDialogContext context, LuisResult result)
         {
-            CheckMe(context);
             if (DataDump.BrokenBuilds.Any())
             {
-                var users = DataDump.BrokenBuilds.Last().Offenders.Where(u => u.FirstName != context.UserData.GetValue<User>("me").FirstName);
-                if (users.Count() > 1)
+                var me = DataDump.Users.Where(u => u.FirstName == context.Activity.From.Name).FirstOrDefault();
+                if (me != null)
                 {
-                    await context.PostAsync(string.Join(",", users.Skip(1).Select(u => u.FirstName) + "and" + users.First().FirstName));
-                }
-                else if (users.Count() == 1)
-                {
-                    await context.PostAsync(users.First().FirstName);
+                    var users = DataDump.BrokenBuilds.Last().Offenders.Where(u => u.FirstName != me.FirstName);
+                    if (users.Count() > 1)
+                    {
+                        await context.PostAsync(string.Join(",", users.Skip(1).Select(u => u.FirstName) + "and" + users.First().FirstName));
+                    }
+                    else if (users.Count() == 1)
+                    {
+                        await context.PostAsync(users.First().FirstName);
+                    }
+                    else
+                    {
+                        await context.PostAsync("There's no one else, admit it. It was you");
+                    }
                 }
                 else
                 {
-                    await context.PostAsync("There's no one else, admit it. It was you");
+                    await context.PostAsync("Who, What, Where... A case for sherlock I think");
                 }
             }
             else

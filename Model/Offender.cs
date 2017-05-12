@@ -2,7 +2,7 @@
 
 namespace LuisBot.Model
 {
-    internal class Offender : User
+    public class Offender : User
     {
         public Offender()
         {
