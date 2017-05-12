@@ -63,17 +63,7 @@ namespace LuisBot.Controllers
         Random r = new Random();
 
 
-        public IMessageActivity CreateMessage(ConversationAccount conversation, string text)
-        {
-            var msg = Activity.CreateMessageActivity();
-            msg.From = new ChannelAccount(botId, "Bot");
-            msg.Recipient = new ChannelAccount("default-user", "default-user");
-            msg.Conversation = conversation;
-            msg.ServiceUrl = svcUrl;
-            msg.Text = text;
 
-            return msg;
-        }
 
         public async Task<HttpResponseMessage> Post([FromBody]BrokeBuildJson data)
         {
@@ -90,7 +80,7 @@ namespace LuisBot.Controllers
                 // create msg
                 var msg = Activity.CreateMessageActivity();
                 msg.From = new ChannelAccount(botId, "Jerry");
-                msg.Recipient = new ChannelAccount(user.SkypeName, user.FirstName);
+                msg.Recipient = recipient;
                 msg.Conversation = new ConversationAccount(id: "8:" + conversation.Id);
                 msg.ServiceUrl = svcUrl;
 
@@ -98,7 +88,7 @@ namespace LuisBot.Controllers
                 {
                     Title = $"{x.author} revision {x.revision}",
                     Type = ActionTypes.OpenUrl,
-                    Value = $"http://btbbot.azurewebsites.net/wow.jpg"
+                    Value = $"https://jira.vermilionreporting.com/browse/" + HttpUtility.UrlEncode("VP-319")
                 });
 
                 HeroCard heroCard = new HeroCard()
@@ -111,11 +101,16 @@ namespace LuisBot.Controllers
 
                 msg.Attachments.Add(heroCard.ToAttachment());
 
-                var createNessage = CreateMessage(new ConversationAccount(id: "8:" + conversation.Id), $"Was it you {user.FirstName}?");
-
+                // 
+                var msg2 = Activity.CreateMessageActivity();
+                msg2.From = from;
+                msg2.Recipient = recipient;
+                msg2.Conversation = new ConversationAccount(id: "8:" + conversation.Id);
+                msg2.ServiceUrl = svcUrl;
+                msg2.Text = $"Was it you {user.FirstName}?";
 
                 await connector.Conversations.SendToConversationAsync((Activity)msg);
-                await connector.Conversations.SendToConversationAsync((Activity)createNessage);
+                await connector.Conversations.SendToConversationAsync((Activity)msg2);
 
             }
             catch (Exception e)
